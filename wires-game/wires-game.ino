@@ -7,6 +7,9 @@ int pinConnections[pinCount];
 
 const int buttonPin = 2;
 volatile bool doCheck = false;
+
+int combination[pinCount];
+
 void check() { // runs when button is pressed : checks wire connections
   doCheck = true;
 }
@@ -43,6 +46,19 @@ void performCheck() {
   }
 }
 
+void setCombination() { // Sets a random combination
+  performCheck();
+  for (int i = 0; i < pinCount; i++) { // just set normal values
+    combination[i] = pins[i];  
+  }
+  for (int i = 0; i < pinCount; i++) { // swaps each with a random thing
+    int randomTarget = random(0, pinCount);
+    int temp = combination[i];
+    combination[i] = combination[randomTarget];
+    combination[randomTarget] = temp;
+  }
+}
+
 void setup() {
   pinMode(buttonPin, INPUT_PULLUP);
   attachInterrupt(digitalPinToInterrupt(buttonPin), check, FALLING); // button is usually pulled up, so we check when it falls
@@ -57,6 +73,16 @@ void setup() {
   randomSum += analogRead(0);
   randomSum += micros();
   randomSeed(randomSum);
+
+  setCombination();
+  Serial.println("CODE BEGIN");
+  for (int i = 0; i < pinCount; i++) {
+      Serial.print(pins[i]);
+      Serial.print("<->");
+      Serial.print(combination[i]);
+      Serial.print("  ");
+    }
+  Serial.println("CODE END");
 }
 
 void loop() {
