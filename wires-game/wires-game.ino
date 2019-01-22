@@ -3,7 +3,7 @@
 
 const int pinCount = 8;
 const int pins[pinCount] = {11, 10, 9, 8, 7, 6, 5, 4};
-int pinConnections[pinCount];
+long pinConnections[pinCount];
 
 const int buttonPin = 2;
 volatile bool doCheck = false;
@@ -17,14 +17,14 @@ void check() { // runs when button is pressed : checks wire connections
 void performCheck() {
   for (int i = 0; i < pinCount; i++) { // we will get each pins connections
     pinMode(pins[i], INPUT_PULLUP); // current pin will be reading
-    bool foundMatch = false;
+    
     for (int j = 0; j < pinCount; j++) { // all other pins must be in output state
       if (i != j) {
         pinMode(pins[j], OUTPUT);
         bool allCorrect = true;
         for (int k = 0; k < 16; k++) { // repeat 16 times. no reason why it should be 16.
           int targetState;
-          if (k % 3 == 0) {
+          if (k % 2 == 0) {
             targetState = LOW;
           } else {
             targetState = HIGH;
@@ -34,9 +34,7 @@ void performCheck() {
           allCorrect = allCorrect && (digitalRead(pins[i]) == targetState);
         }
         if (allCorrect) {
-          pinConnections[i] = pins[j]; // set to the actual pin tested
-          foundMatch = true;
-          break;
+          pinConnections[i] += pow(2, j); // set to the actual pin tested
         }
       }
     }
