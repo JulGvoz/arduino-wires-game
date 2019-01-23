@@ -19,8 +19,12 @@ void performCheck() {
     pinMode(pins[i], INPUT_PULLUP); // current pin will be reading
     pinConnections[i] = bit(i);
     for (int j = 0; j < pinCount; j++) { // all other pins must be in output state
+      Serial.print("|");
+      Serial.print(j);
+      
       if (i != j) {
         pinMode(pins[j], OUTPUT);
+        delay(50);
         bool allCorrect = true;
         for (int k = 0; k < 16; k++) { // repeat 16 times. no reason why it should be 16.
           int targetState;
@@ -30,14 +34,19 @@ void performCheck() {
             targetState = HIGH;
           }
           digitalWrite(pins[j], targetState); // the target pin is set, 16 times, and we check if things match
-          delayMicroseconds(10);
+          delay(50);
           allCorrect = allCorrect && (digitalRead(pins[i]) == targetState);
+          Serial.print(digitalRead(pins[i]));
         }
         if (allCorrect) {
+          Serial.print("t");
           pinConnections[i] += bit(j); // set to the actual pin tested
         }
+        Serial.print(": ");
+        Serial.print(pinConnections[i]);
       }
     }
+    Serial.println();
   }
 }
 
