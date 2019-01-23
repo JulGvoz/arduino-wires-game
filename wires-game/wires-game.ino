@@ -1,8 +1,8 @@
 
 
 
-const int pinCount = 8;
-const int pins[pinCount] = {11, 10, 9, 8, 7, 6, 5, 4};
+const int pinCount = 3;
+const int pins[pinCount] = {11, 10, 9};
 long pinConnections[pinCount];
 
 const int buttonPin = 2;
@@ -17,7 +17,7 @@ void check() { // runs when button is pressed : checks wire connections
 void performCheck() {
   for (int i = 0; i < pinCount; i++) { // we will get each pins connections
     pinMode(pins[i], INPUT_PULLUP); // current pin will be reading
-    
+    pinConnections[i] = bit(i);
     for (int j = 0; j < pinCount; j++) { // all other pins must be in output state
       if (i != j) {
         pinMode(pins[j], OUTPUT);
@@ -28,18 +28,15 @@ void performCheck() {
             targetState = LOW;
           } else {
             targetState = HIGH;
-            }
+          }
           digitalWrite(pins[j], targetState); // the target pin is set, 16 times, and we check if things match
           delayMicroseconds(10);
           allCorrect = allCorrect && (digitalRead(pins[i]) == targetState);
         }
         if (allCorrect) {
-          pinConnections[i] += pow(2, j); // set to the actual pin tested
+          pinConnections[i] += bit(j); // set to the actual pin tested
         }
       }
-    }
-    if (!foundMatch) {
-      pinConnections[i] = pins[i]; // If we haven't found anything, just set it to itself
     }
   }
 }
