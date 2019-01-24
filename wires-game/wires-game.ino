@@ -1,9 +1,9 @@
 
 
 
-const int pinCount = 3;
-const int pins[pinCount] = {11, 10, 9};
-long pinConnections[pinCount];
+const int pinCount = 8;
+const int pins[pinCount] = {11, 10, 9, 8, 7, 6, 5, 4};
+int pinConnections[pinCount];
 
 const int buttonPin = 2;
 volatile bool doCheck = false;
@@ -17,36 +17,32 @@ void check() { // runs when button is pressed : checks wire connections
 void performCheck() {
   for (int i = 0; i < pinCount; i++) { // we will get each pins connections
     pinMode(pins[i], INPUT_PULLUP); // current pin will be reading
-    pinConnections[i] = bit(i);
+    bool foundMatch = false;
     for (int j = 0; j < pinCount; j++) { // all other pins must be in output state
-      Serial.print("|");
-      Serial.print(j);
-      
       if (i != j) {
         pinMode(pins[j], OUTPUT);
-        delay(50);
         bool allCorrect = true;
         for (int k = 0; k < 16; k++) { // repeat 16 times. no reason why it should be 16.
           int targetState;
-          if (k % 2 == 0) {
+          if (k % 3 == 0) {
             targetState = LOW;
           } else {
             targetState = HIGH;
-          }
+            }
           digitalWrite(pins[j], targetState); // the target pin is set, 16 times, and we check if things match
-          delay(50);
+          delayMicroseconds(10);
           allCorrect = allCorrect && (digitalRead(pins[i]) == targetState);
-          Serial.print(digitalRead(pins[i]));
         }
         if (allCorrect) {
-          Serial.print("t");
-          pinConnections[i] += bit(j); // set to the actual pin tested
+          pinConnections[i] = pins[j]; // set to the actual pin tested
+          foundMatch = true;
+          break;
         }
-        Serial.print(": ");
-        Serial.print(pinConnections[i]);
       }
     }
-    Serial.println();
+    if (!foundMatch) {
+      pinConnections[i] = pins[i]; // If we haven't found anything, just set it to itself
+    }
   }
 }
 
