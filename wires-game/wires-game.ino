@@ -46,16 +46,31 @@ void performCheck() {
   }
 }
 
+void swap(int arr[], int index1, int index2) {
+  int temp = arr[index1];
+  arr[index1] = arr[index2];
+  arr[index2] = temp;
+}
+
 void setCombination() { // Sets a random combination
   performCheck();
+  int combinationPinsLeft = pinCount;
+  int possibleIndexes[pinCount];
   for (int i = 0; i < pinCount; i++) { // just set normal values
-    combination[i] = pins[i];  
+    combination[i] = pins[i];
+    possibleIndexes[i] = i;
   }
-  for (int i = 0; i < pinCount; i++) { // swaps each with a random thing
-    int randomTarget = random(0, pinCount);
-    int temp = combination[i];
-    combination[i] = combination[randomTarget];
-    combination[randomTarget] = temp;
+  
+  int currentPinIndex = 0;
+  while (combinationPinsLeft - currentPinIndex > 1) {
+    int targetPinIndex = random(currentPinIndex, combinationPinsLeft);
+    if (targetPinIndex == currentPinIndex) {
+      swap(possibleIndexes, currentPinIndex, combinationPinsLeft-1); // combinationPinsLeft is a count, to get an index, do -1
+      currentPinIndex++;
+      combinationPinsLeft--;
+    } else {
+      
+    }
   }
 }
 
